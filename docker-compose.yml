@@ -1,0 +1,47 @@
+version: '3.9'
+
+services:
+  auth-service:
+    build:
+      context: ./auth-service
+    container_name: mini-fency-auth
+    env_file:
+      - .env
+    environment:
+      PORT: 8080
+      ALLOWED_ORIGINS: '${ALLOWED_ORIGINS},chrome-extension://${CHROME_EXTENSION_ID}'
+    restart: unless-stopped
+
+  blacklist-service:
+    build:
+      context: ./blacklist-service
+    container_name: mini-fency-blacklist
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      ALLOWED_ORIGINS: '${ALLOWED_ORIGINS},chrome-extension://${CHROME_EXTENSION_ID}'
+      PORT: 3000
+    restart: unless-stopped
+
+  web-ui:
+    build:
+      context: ./web-ui
+      args:
+        - VITE_EXTENSION_ID=${CHROME_EXTENSION_ID}
+    container_name: mini-fency-ui
+    ports:
+      - '80:80'
+    depends_on:
+      - auth-service
+      - blacklist-service
+    restart: unless-stopped
+    profiles:
+      - ui
+
+  extension-build:
+    build:
+      context: ./extension
+    container_name: mini-fency-extension-build
+    volumes:
+      - ./extension/dist:/app/dist
+    profiles:
+      - extension

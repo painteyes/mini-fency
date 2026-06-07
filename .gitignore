@@ -1,0 +1,21 @@
+# Environment
+.env
+
+# Go
+auth-service/auth-service
+
+# Node
+blacklist-service/node_modules/
+blacklist-service/data/
+
+# Vue
+web-ui/node_modules/
+web-ui/dist/
+
+# Extension
+extension/dist/
+extension/node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
